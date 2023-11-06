@@ -45,6 +45,8 @@ public class MainFrame extends JFrame {
     private JMenuItem saveToTextMenuItem;
     private JMenuItem saveToGraphicsMenuItem;
     private JMenuItem searchValueMenuItem;
+    private JMenuItem spravkaMenuItem;
+    private JMenuItem searchS1mpleMenuItem;
     // Поля ввода для считывания значений переменных
     private JTextField textFieldFrom;
     private JTextField textFieldTo;
@@ -91,8 +93,8 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(MainFrame.this,"Автор программы Бабарико Виолетта, 7 группа", "О программе", JOptionPane.INFORMATION_MESSAGE);
             }
         };
-        saveToTextMenuItem = spravkaMenu.add(spravka);
-        saveToTextMenuItem.setEnabled(true);
+       spravkaMenuItem = spravkaMenu.add(spravka);
+        spravkaMenuItem.setEnabled(true);
 
 
 // Создать новое "действие" по сохранению в текстовый файл
@@ -159,6 +161,21 @@ public class MainFrame extends JFrame {
         searchValueMenuItem = tableMenu.add(searchValueAction);
 // По умолчанию пункт меню является недоступным (данных ещѐ нет)
         searchValueMenuItem.setEnabled(false);
+
+        Action searchS1mple = new AbstractAction("Найти близкие к простым") {
+            public void actionPerformed(ActionEvent event) {
+// Запросить пользователя ввести искомую строку
+                int value = JOptionPane.showConfirmDialog(MainFrame.this, "Хотите найти близкие к простым?", "Поиск близких значений", JOptionPane.YES_NO_OPTION);
+// Установить введенное значение в качестве иголки
+                renderer.setSearchS1mple(value==0);
+// Обновить таблицу
+                getContentPane().repaint();
+            }
+        };
+        // Добавить действие в меню "Таблица"
+        searchS1mpleMenuItem = tableMenu.add(searchS1mple);
+// По умолчанию пункт меню является недоступным (данных ещѐ нет)
+        searchS1mpleMenuItem.setEnabled(false);
 // Создать область с полями ввода для границ отрезка и шага
 // Создать подпись для ввода левой границы отрезка
         JLabel labelForFrom = new JLabel("X изменяется на интервале от:");
@@ -186,7 +203,7 @@ public class MainFrame extends JFrame {
         textFieldStep.setMaximumSize(textFieldStep.getPreferredSize());
 // Создать контейнер 1 типа "коробка с горизонтальной укладкой"
         Box hboxRange = Box.createHorizontalBox();
-// Задать для контейнера тип рамки "объѐмная"
+// Задать для контейнера тип рамки "объёмная"
         hboxRange.setBorder(BorderFactory.createBevelBorder(1));
 // Добавить "клей" C1-H1
         hboxRange.add(Box.createHorizontalGlue());
@@ -216,7 +233,7 @@ public class MainFrame extends JFrame {
         hboxRange.add(Box.createHorizontalGlue());
 // Установить предпочтительный размер области равным удвоенному
 // минимальному, чтобы при компоновке область совсем не сдавили
-        hboxRange.setPreferredSize(new Dimension((int) (hboxRange.getMaximumSize().getWidth()), ((int) hboxRange.getMinimumSize().getHeight()) * 2));
+        hboxRange.setPreferredSize(new Dimension((int) (hboxRange.getMaximumSize().getWidth()), ((int)hboxRange.getMinimumSize().getHeight()) * 2));
 // Установить область в верхнюю (северную) часть компоновки
         getContentPane().add(hboxRange, BorderLayout.NORTH);
 // Создать кнопку "Вычислить"
@@ -229,17 +246,17 @@ public class MainFrame extends JFrame {
                     Double from = Double.parseDouble(textFieldFrom.getText());
                     Double to = Double.parseDouble(textFieldTo.getText());
                     Double step = Double.parseDouble(textFieldStep.getText());
-// На основе считанных данных создать новыйэкземпляр модели таблицы
+// На основе считанных данных создать новый экземпляр модели таблицы
                     data = new GornerTableModel(from, to, step, MainFrame.this.coefficients);
 // Создать новый экземпляр таблицы
                     JTable table = new JTable(data);
-// Установить в качестве визуализатора ячеек длякласса Double разработанный визуализатор
+// Установить в качестве визуализатора ячеек для класса Double разработанный визуализатор
                     table.setDefaultRenderer(Double.class, renderer);
 // Установить размер строки таблицы в 30пикселов
                     table.setRowHeight(30);
-// Удалить все вложенные элементы из контейнераhBoxResult
+// Удалить все вложенные элементы из контейнера hBoxResult
                     hBoxResult.removeAll();
-// Добавить в hBoxResult таблицу, "обѐрнутую" впанель с полосами прокрутки
+// Добавить в hBoxResult таблицу, "обѐрнутую" в панель с полосами прокрутки
                     hBoxResult.add(new JScrollPane(table));
 // Обновить область содержания главного окна
                     getContentPane().validate();
@@ -247,8 +264,9 @@ public class MainFrame extends JFrame {
                     saveToTextMenuItem.setEnabled(true);
                     saveToGraphicsMenuItem.setEnabled(true);
                     searchValueMenuItem.setEnabled(true);
+                    searchS1mpleMenuItem.setEnabled(true);
                 } catch (NumberFormatException ex) {
-// В случае ошибки преобразования чисел показатьсообщение об ошибке
+// В случае ошибки преобразования чисел показать сообщение об ошибке
                     JOptionPane.showMessageDialog(MainFrame.this,
                             "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа",
                             JOptionPane.WARNING_MESSAGE);
@@ -275,6 +293,7 @@ public class MainFrame extends JFrame {
 // Обновить область содержания главного окна
                 getContentPane().validate();
                 renderer.setNeedle(null);
+                renderer.setSearchS1mple(false);
             }
         });
 // Поместить созданные кнопки в контейнер
@@ -293,16 +312,16 @@ public class MainFrame extends JFrame {
 // Область для вывода результата пока что пустая
         hBoxResult = Box.createHorizontalBox();
         hBoxResult.add(new JPanel());
-// Установить контейнер hBoxResult в главной (центральной) областиграничной компоновки
+// Установить контейнер hBoxResult в главной (центральной) области граничной компоновки
         getContentPane().add(hBoxResult, BorderLayout.CENTER);
     }
 
     protected void saveToGraphicsFile(File selectedFile) {
         try {
-// Создать новый байтовый поток вывода, направленный вуказанный файл
+// Создать новый байтовый поток вывода, направленный в указанный файл
             DataOutputStream out = new DataOutputStream(new
                     FileOutputStream(selectedFile));
-// Записать в поток вывода попарно значение X в точке,значение многочлена в точке
+// Записать в поток вывода попарно значение X в точке, значение многочлена в точке
             for (int i = 0; i < data.getRowCount(); i++) {
                 out.writeDouble((Double) data.getValueAt(i, 0));
                 out.writeDouble((Double) data.getValueAt(i, 1));

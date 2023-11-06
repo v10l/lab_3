@@ -25,7 +25,7 @@ public class GornerTableModel extends AbstractTableModel {
     }
     public int getColumnCount() {
 // В данной модели два столбца
-        return 3;
+        return 4;
     }
     public int getRowCount() {
 // Вычислить количество точек между началом и концом отрезка
@@ -33,38 +33,35 @@ public class GornerTableModel extends AbstractTableModel {
         return (int)(Math.ceil((to-from)/step))+1;
     }
     public Object getValueAt(int row, int col) {
-
-// Вычислить значение X как НАЧАЛО_ОТРЕЗКА + ШАГ*НОМЕР_СТРОКИ
+        // Вычислить значение X как НАЧАЛО_ОТРЕЗКА + ШАГ*НОМЕР_СТРОКИ
         double x = from + step*row;
-        Double result = 0.0;
-// Вычисление значения в точке по схеме Горнера.
-// Вспомнить 1-ый курс и реализовать
+        Double gornerResult = 0.0;
         for (int i = 1; i < coefficients.length; i++) {
-            result = result * x + coefficients[i];
+            gornerResult = gornerResult * x + coefficients[i];
         }
-        if (col==0) {
-// Если запрашивается значение 1-го столбца, то это X
-            return x;
-        }  else if (col == 1) {
-// Если запрашивается значение 2-го столбца, то это значение многочлена
-
-            return result ;
-        }
-        else {
-
-            return result>2.2;
+        Double otherResult = 0.0; // TODO: calculate
+        switch (col) {
+            case 0:
+                return x;
+            case 1:
+                return gornerResult;
+            case 2:
+                return otherResult*10;
+            default:
+                return otherResult-gornerResult;
         }
     }
+
     public String getColumnName(int col) {
         switch (col) {
             case 0:
-// Название 1-го столбца
                 return "Значение X";
             case 1:
-// Название 2-го столбца
                 return "Значение многочлена";
+            case 2:
+                return "Не по схеме";
             default:
-                return  "Квадрат";
+                return "Разница";
         }
     }
     public Class<?> getColumnClass(int col) {

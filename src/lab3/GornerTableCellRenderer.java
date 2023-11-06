@@ -1,4 +1,5 @@
 package lab3;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -7,6 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+
 public class GornerTableCellRenderer implements TableCellRenderer {
     private JPanel panel = new JPanel();
     private JLabel label = new JLabel();
@@ -14,7 +16,9 @@ public class GornerTableCellRenderer implements TableCellRenderer {
 // (иголкой). Применяется аналогия поиска иголки в стоге сена, в роли
 // стога сена - таблица
     private String needle = null;
-    private DecimalFormat formatter = (DecimalFormat)NumberFormat.getInstance();
+    private boolean searchS1mple = false;
+    private DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+
     public GornerTableCellRenderer() {
 // Показывать только 5 знаков после запятой
         formatter.setMaximumFractionDigits(5);
@@ -31,33 +35,39 @@ public class GornerTableCellRenderer implements TableCellRenderer {
 // Разместить надпись внутри панели
         panel.add(label);
 // Установить выравнивание надписи по левому краю панели
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
 
     }
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
 // Преобразовать double в строку с помощью форматировщика
         panel.setBackground(Color.WHITE);
-        if (col==1 || col == 0) {
-            String formattedDouble = formatter.format(value);
+        if ((Double)value < 0) {
+            panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        } else if ((Double)value > 0) {panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        } else  panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+
+        String formattedDouble = formatter.format(value);
 // Установить текст надписи равным строковому представлению числа
-            label.setText(formattedDouble);
-            if (needle!=null && needle.equals(formattedDouble)) {
+        label.setText(formattedDouble);
+        if (needle != null && needle.equals(formattedDouble)) {
 // Номер столбца = 1 (т.е. второй столбец) + иголка не null (значит что-то ищем) +
 // значение иголки совпадает со значением ячейки таблицы -
 // окрасить задний фон панели в красный цвет
-                panel.setBackground(Color.RED);
-            }
+            panel.setBackground(Color.RED);
         }
 
-        if (col == 2 ) {
-            JCheckBox checkBox = new JCheckBox("");
-            checkBox.setSelected((boolean)value);
-            JPanel panelCopy = new JPanel();
-            panelCopy.setBackground(Color.WHITE);
-            panelCopy.add(checkBox);
-            return panelCopy;
+        if (searchS1mple) {
+
+            panel.setBackground(Color.MAGENTA);
         }
+
         return panel;
+    }
+
+    public void setSearchS1mple(boolean searchS1mple) {
+        this.searchS1mple = searchS1mple;
     }
     public void setNeedle(String needle) {
         this.needle = needle;
