@@ -282,7 +282,7 @@ public class MainFrame extends JFrame {
                 textFieldFrom.setText("0.0");
                 textFieldTo.setText("1.0");
                 textFieldStep.setText("0.1");
-// Удалить все вложенные элементы контейнераhBoxResult
+// Удалить все вложенные элементы контейнера hBoxResult
                 hBoxResult.removeAll();
 // Добавить в контейнер пустую панель
                 hBoxResult.add(new JPanel());
@@ -304,10 +304,10 @@ public class MainFrame extends JFrame {
         hboxButtons.add(Box.createHorizontalStrut(30));
         hboxButtons.add(buttonReset);
         hboxButtons.add(Box.createHorizontalGlue());
-// Установить предпочтительный размер области равным удвоенномуминимальному, чтобы при
+// Установить предпочтительный размер области равным удвоенному минимальному, чтобы при
 // компоновке окна область совсем не сдавили
         hboxButtons.setPreferredSize(new Dimension((int) (hboxButtons.getMaximumSize().getWidth()), (int) (hboxButtons.getMinimumSize().getHeight()) * 2));
-// Разместить контейнер с кнопками в нижней (южной) областиграничной компоновки
+// Разместить контейнер с кнопками в нижней (южной) области граничной компоновки
         getContentPane().add(hboxButtons, BorderLayout.SOUTH);
 // Область для вывода результата пока что пустая
         hBoxResult = Box.createHorizontalBox();

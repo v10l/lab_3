@@ -36,19 +36,24 @@ public class GornerTableModel extends AbstractTableModel {
         // Вычислить значение X как НАЧАЛО_ОТРЕЗКА + ШАГ*НОМЕР_СТРОКИ
         double x = from + step*row;
         Double gornerResult = 0.0;
-        for (int i = 1; i < coefficients.length; i++) {
+        for (int i = 0; i < coefficients.length; i++) {
             gornerResult = gornerResult * x + coefficients[i];
         }
-        Double otherResult = 0.0; // TODO: calculate
+
+        Double otherResult = coefficients[coefficients.length-1]; // TODO: calculate
+        for (int i = 0; i < coefficients.length-1; i++) {
+            otherResult += coefficients[i]*Math.pow(x, coefficients.length-1-i);
+        }
+
         switch (col) {
             case 0:
                 return x;
             case 1:
                 return gornerResult;
             case 2:
-                return otherResult*10;
+                return otherResult;
             default:
-                return otherResult-gornerResult;
+                return gornerResult-otherResult;
         }
     }
 
