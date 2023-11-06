@@ -59,8 +59,10 @@ public class GornerTableCellRenderer implements TableCellRenderer {
         }
 
         if (searchS1mple) {
-
-            panel.setBackground(Color.MAGENTA);
+            long closestInt = Math.round((Double)value);
+            if (isPrimeNumber(closestInt) && Math.abs(closestInt-(Double)value) <= 0.1) {
+                panel.setBackground(Color.MAGENTA);
+            }
         }
 
         return panel;
@@ -71,6 +73,18 @@ public class GornerTableCellRenderer implements TableCellRenderer {
     }
     public void setNeedle(String needle) {
         this.needle = needle;
+    }
+
+    public static boolean isPrimeNumber(long number) {
+        if (number <= 1) {
+            return false;
+        }
+        for (long i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
