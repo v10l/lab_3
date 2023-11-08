@@ -7,8 +7,7 @@ public class GornerTableModel extends AbstractTableModel {
     private Double from;
     private Double to;
     private Double step;
-    public GornerTableModel(Double from, Double to, Double step,
-                            Double[] coefficients) {
+    public GornerTableModel(Double from, Double to, Double step, Double[] coefficients) {
         this.from = from;
         this.to = to;
         this.step = step;
@@ -40,7 +39,7 @@ public class GornerTableModel extends AbstractTableModel {
             gornerResult = gornerResult * x + coefficients[i];
         }
 
-        Double otherResult = coefficients[coefficients.length-1]; // TODO: calculate
+        Double otherResult = coefficients[coefficients.length-1];
         for (int i = 0; i < coefficients.length-1; i++) {
             otherResult += coefficients[i]*Math.pow(x, coefficients.length-1-i);
         }

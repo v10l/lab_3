@@ -1,33 +1,10 @@
 package lab3;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JCheckBox;
+import java.io.*;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -43,6 +20,7 @@ public class MainFrame extends JFrame {
     // Элементы меню вынесены в поля данных класса, так как ими необходимо
 // манипулировать из разных мест
     private JMenuItem saveToTextMenuItem;
+    private JMenuItem saveToCSVMenuItem;
     private JMenuItem saveToGraphicsMenuItem;
     private JMenuItem searchValueMenuItem;
     private JMenuItem spravkaMenuItem;
@@ -90,7 +68,13 @@ public class MainFrame extends JFrame {
 // и инициализировать текущей директорией
                     fileChooser.setCurrentDirectory(new File("."));
                 }
-                JOptionPane.showMessageDialog(MainFrame.this,"Автор программы Бабарико Виолетта, 7 группа", "О программе", JOptionPane.INFORMATION_MESSAGE);
+
+                JLabel imageLabel = new JLabel("Автор программы Бабарико Виолетта, 7 группа");
+                ImageIcon iconLogo = new ImageIcon("C:\\Users\\37529\\IdeaProjects\\qwe\\lab3\\pic.png");
+                imageLabel.setIcon(iconLogo);
+                JOptionPane.showMessageDialog(MainFrame.this,imageLabel,
+                        "О программе",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         };
        spravkaMenuItem = spravkaMenu.add(spravka);
@@ -144,6 +128,33 @@ public class MainFrame extends JFrame {
         saveToGraphicsMenuItem = fileMenu.add(saveToGraphicsAction);
 // По умолчанию пункт меню является недоступным(данных ещѐ нет)
         saveToGraphicsMenuItem.setEnabled(false);
+
+        // Создать новое "действие" по сохранению в текстовый файл
+        Action saveToCSVAction = new AbstractAction("Сохранить в CSV файл") {
+            public void actionPerformed(ActionEvent event) {
+                if (fileChooser == null) {
+// Если экземпляр диалогового окна "Открыть файл" ещѐ не создан,
+// то создать его
+                    fileChooser = new JFileChooser();
+// и инициализировать текущей директорией
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+// Показать диалоговое окно
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+// Если результат его показа успешный,
+// сохранить данные в текстовый файл
+                    saveToCSVFile(fileChooser.getSelectedFile());
+                }
+            }
+        };
+// Добавить соответствующий пункт подменю в меню "Файл"
+        saveToCSVMenuItem = fileMenu.add(saveToCSVAction);
+// По умолчанию пункт меню является недоступным (данных ещѐ нет)
+        saveToCSVMenuItem.setEnabled(false);
+
+
+
+
 // Создать новое действие по поиску значений многочлена
         Action searchValueAction = new AbstractAction("Найти значение многочлена") {
             public void actionPerformed(ActionEvent event) {
@@ -262,6 +273,7 @@ public class MainFrame extends JFrame {
                     getContentPane().validate();
 // Пометить ряд элементов меню как доступных
                     saveToTextMenuItem.setEnabled(true);
+                    saveToCSVMenuItem.setEnabled(true);
                     saveToGraphicsMenuItem.setEnabled(true);
                     searchValueMenuItem.setEnabled(true);
                     searchS1mpleMenuItem.setEnabled(true);
@@ -288,8 +300,10 @@ public class MainFrame extends JFrame {
                 hBoxResult.add(new JPanel());
 // Пометить элементы меню как недоступные
                 saveToTextMenuItem.setEnabled(false);
+                saveToCSVMenuItem.setEnabled(false);
                 saveToGraphicsMenuItem.setEnabled(false);
                 searchValueMenuItem.setEnabled(false);
+                searchS1mpleMenuItem.setEnabled(false);
 // Обновить область содержания главного окна
                 getContentPane().validate();
                 renderer.setNeedle(null);
@@ -364,6 +378,30 @@ public class MainFrame extends JFrame {
         }
     }
 
+    protected void saveToCSVFile(File selectedFile) {
+        try {
+// Создать новый символьный поток вывода, направленный в указанный файл
+            PrintStream out = new PrintStream(selectedFile);
+            out.print(data.getColumnName(0) );
+            for (int i = 1; i < data.getColumnCount(); i++) {
+                out.print("," + data.getColumnName(i));
+            }
+            //out.println("Значение Х,Значение многочлена,Не по схеме,Разница");
+            out.print("\n");
+            for (int i = 0; i < data.getRowCount(); i++) {
+                out.print(data.getValueAt(i, 0).toString() );
+                for (int j = 1; j < data.getColumnCount(); j++) {
+                    out.print("," + data.getValueAt(i, j).toString());
+                }
+                out.print("\n");
+            }
+            out.print("\n");
+        } catch (FileNotFoundException e) {
+// Исключительную ситуацию "ФайлНеНайден" можно не
+// обрабатывать, так как мы файл создаѐм, а не открываем
+        }
+    }
+
     public static void main(String[] args) {
 // Если не задано ни одного аргумента командной строки -
 // Продолжать вычисления невозможно, коэффиценты неизвестны
@@ -381,8 +419,7 @@ public class MainFrame extends JFrame {
             }
         } catch (NumberFormatException ex) {
 // Если преобразование невозможно - сообщить об ошибке изавершиться
-            System.out.println("Ошибка преобразования строки '" +
-                    args[i] + "' в число типа Double");
+            System.out.println("Ошибка преобразования строки '" + args[i] + "' в число типа Double");
             System.exit(-2);
         }
 // Создать экземпляр главного окна, передав ему коэффициенты
